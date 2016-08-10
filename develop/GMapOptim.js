@@ -22,14 +22,14 @@ import { susolvkaCoords, generateMarkers } from './data/fakeData';
 import props2Stream from './utils/props2Stream';
 
 export const gMap = ({
-  style, hoverDistance, options,
+  style, hoverDistance, mapOptions,
   mapParams: { center, zoom },
   onChange, onChildMouseEnter, onChildMouseLeave,
-  markers, draggable,
+  markers, draggable, onClick,
 }) => (
   <GoogleMapReact
     style={style}
-    options={options}
+    options={mapOptions}
     hoverDistance={hoverDistance}
     center={center}
     zoom={zoom}
@@ -37,6 +37,7 @@ export const gMap = ({
     onChildMouseEnter={onChildMouseEnter}
     onChildMouseLeave={onChildMouseLeave}
     draggable={draggable}
+    onClick={onClick}
     experimental
   >
     {markers}
@@ -70,6 +71,7 @@ export const gMapHOC = compose(
   ),
   withState('hoveredMarkerId', 'setHoveredMarkerId', -1),
   withState('mapParams', 'setMapParams', { center: susolvkaCoords, zoom: 6 }),
+  withState('mapOptions', 'setMapOptions', props => props.options),
   // describe events
   withHandlers({
     onChange: ({ setMapParams }) => ({ center, zoom, bounds }) => {
@@ -80,6 +82,9 @@ export const gMapHOC = compose(
     },
     onChildMouseLeave: ({ setHoveredMarkerId }) => () => {
       setHoveredMarkerId(-1);
+    },
+    onClick: ({setMapOptions}) => (event) => {
+      setMapOptions({scrollwheel: false});
     },
   }),
   withPropsOnChange(
